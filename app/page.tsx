@@ -52,18 +52,17 @@ export default function Home() {
  
   return (
     <main className="relative relative w-full bg-white dark:bg-black">
-      <div className="relative z-0 -mt-[96px] bg-blue-800 dark:bg-blue-800">
+      <div className="relative z-0 -mt-[96px] bg-emerald-950 dark:bg-emerald-950">
         <LandingPageHero />
       </div>
       <div className="absolute top-0 left-0 z-10 w-full flex flex-col items-center">
-        <div className="w-[95%] h-[80px] bg-blue-800 dark:bg-blue-800 rounded-[70px] flex mt-4 mx-8 p-4">
+        <div className="w-[95%] h-[80px] bg-emerald-950 dark:bg-emerald-950 rounded-[70px] flex mt-4 mx-8 p-4">
           {/* logo */}
           <div className="relative w-[200px] h-[50px] rounded-[70px] items-center justify-start">
-            <Image className="p-[7px]" src="/img/smk_mvp_ars_logo_white.png.png" alt="logo" fill />
+            <Image className="p-[7px]" src="/img/logo/rxyuu1.png" alt="logo" fill />
           </div>
           {/* menu */}
-          <div className="flex flex-1 items-center justify-center bg-white dark:bg-black rounde
-          d-[70px] p-4">
+          <div className="flex flex-1 bg-white dark:bg-black rounded-[70px] p-4">
             <MenuLandingPage />
           </div>
           {/* login */}
@@ -76,11 +75,11 @@ export default function Home() {
               className="
               bg-white 
               border border-gray-300 
-              text-orange-500 
+              text-black-500 
               hover:bg-gray-100 
               dark:bg-gray-800 
               dark:border-gray-700 
-              dark:text-orange-400
+              dark:text-black-500
               text-[16px]
               font-semibold
               rounded-full
@@ -145,7 +144,7 @@ export default function Home() {
               )}
 
               <div className="flex justify-end gap-2 mt-2">
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button type="submit" className="w-full bg-emerald-950" disabled={isSubmitting}>
                   <span>{isSubmitting ? "Memverifikasi..." : "Login"}</span>
                   {!isSubmitting && <ArrowRight className="ml-2 size-4" />}
                 </Button>

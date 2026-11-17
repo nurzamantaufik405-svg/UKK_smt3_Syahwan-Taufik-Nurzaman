@@ -5,7 +5,7 @@ export function LandingPageHero() {
         <section className="flex w-full min-h-[114vh]  items-center justify-center px-6 text-center ">
             <div className="container">
                 <div className="">
-                    <h1 className="text-4xl font-bold tracking-tight text-black sm:text-5xl md:text-6xl  font-sans">
+                    <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl  font-sans">
                     WELCOME SMK MVP ARS INTERNATIONAL 
                     </h1>
                     <p className="
@@ -16,7 +16,7 @@ export function LandingPageHero() {
                     text-base
                     leading-7
                     sm:text-lg
-                    text-black
+                    text-white
                     ">"UKK kan ku lawannnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn"</p>
                 </div>
                 

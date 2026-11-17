@@ -1,3 +1,9 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { LogOut, User2 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -7,62 +13,117 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuItem,
-  SidebarGroupAction,
   SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { getIconComponent } from "@/lib/icon-map";
 
-} from "@/components/ui/sidebar"
-import { getIconComponent } from "@/lib/icon-map"
-import Image from "next/image";
-
-const listmenu = [
+const listMenu = [
   {
-    "name": "dasboard",
-    "url": "../../admin",
-    "icon": " dasboard",
+    name: "Dashboard",
+    url: "/admin",
+    icon: "dashboard", // Verify this matches the exact key in your icon-map
   },
-
   {
-    "name": "user management",
-    "url": "../../admin/user-management",
-    "icon": "users",
+    name: "User Management",
+    url: "/admin/user-management",
+    icon: "users",
   },
-
   {
-    "name": "category",
-    "url": "../../admin/category",
-    "icon": "settings",
+    name: "Profile",
+    url: "/admin/profile",
+    icon: "user",
   },
+];
 
-  {
-    "name": "jurusan",
-    "url": "../../admin/jurusan",
-    "icon": "home",
-  },
+interface AppSidebarProps {
+  user?: {
+    fullname?: string;
+    email?: string;
+    role?: string;
+  };
+  onLogout?: () => Promise<void> | void;
+}
 
-  {
-    "name": "article",
-    "url": "../../admin/article",
-    "icon": "menu",
-  },
+export function AppSidebar({ user, onLogout }: AppSidebarProps) {
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  {
-    "name": "profile",
-    "url": "../../admin/profile",
-    "icon": "user",
-  }
+  const fullname = user?.fullname || "User";
+  const email = user?.email || "user@example.com";
+  const role = user?.role || "admin";
+  const initials = fullname
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
-]
-export function AppSidebar() {
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      await onLogout?.();
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
   return (
     <Sidebar>
-      <SidebarHeader />
-      <SidebarContent>
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+
+      <SidebarContent className="bg-emerald-950 px-2 pt-2">
         <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
+          <SidebarGroupLabel className="px-2 text-xs font-bold uppercase tracking-wider text-zinc-500">
+            Menu
+          </SidebarGroupLabel>
+          <SidebarGroupContent className="mt-2">
+            <SidebarMenu>
+              {listMenu.map((menu) => {
+                const IconComponent = getIconComponent(menu.icon);
+                return (
+                  <SidebarMenuItem key={menu.name}>
+                    <SidebarMenuButton
+                      asChild
+                      className="my-0.5 w-full rounded-lg px-3 py-2.5 text-zinc-400 transition-all duration-150 hover:bg-zinc-800/70 hover:text-white active:bg-zinc-800"
+                    >
+                      <Link href={menu.url} className="flex items-center gap-3">
+                        {IconComponent && <IconComponent className="size-4" />}
+                        <span className="text-sm font-medium">{menu.name}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton>
+              <User2 />
+              <span>{fullname}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
