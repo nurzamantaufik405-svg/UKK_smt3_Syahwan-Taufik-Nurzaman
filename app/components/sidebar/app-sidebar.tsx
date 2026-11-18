@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, User2 } from "lucide-react";
+import { ChevronDown, LogOut, User2 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -45,13 +45,16 @@ const listMenu = [
 ];
 
 interface AppSidebarProps {
-  user?: {
-    fullname?: string;
-    email?: string;
+  user: {
+    fullname: string;
+    email: string;
     role?: string;
   };
   onLogout?: () => Promise<void> | void;
 }
+
+
+
 
 export function AppSidebar({ user, onLogout }: AppSidebarProps) {
   const router = useRouter();
@@ -81,7 +84,19 @@ export function AppSidebar({ user, onLogout }: AppSidebarProps) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton>
+                  RXYUUtech.
+                  <ChevronDown className="ml-auto" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
+                <DropdownMenuItem>
+                  <span>PYROTECH.BIZ.ID</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -119,7 +134,7 @@ export function AppSidebar({ user, onLogout }: AppSidebarProps) {
           <SidebarMenuItem>
             <SidebarMenuButton>
               <User2 />
-              <span>{fullname}</span>
+              <span>RXyuu</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

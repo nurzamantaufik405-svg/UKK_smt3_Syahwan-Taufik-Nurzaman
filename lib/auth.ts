@@ -1,8 +1,11 @@
 import { cookies } from "next/headers"
 import { prisma } from "@/lib/prisma"
 import { verifyUserJwt } from "@/lib/user-security"
+import { connection } from "next/server"
  
 export async function getAuthenticatedUser() {
+  await connection()
+
   const token = (await cookies()).get("auth_token")?.value
   if (!token) return null
  
@@ -20,4 +23,6 @@ export async function getAuthenticatedUser() {
  
   const { token: _token, ...authenticatedUser } = user
   return authenticatedUser
+
+  
 }
