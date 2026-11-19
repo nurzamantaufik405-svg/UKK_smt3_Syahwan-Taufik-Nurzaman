@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server"
+import { Prisma } from "@prisma/client"
 import { getAuthenticatedUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { createUserJwt, hashUserPassword } from "@/lib/user-security"
 
 const userFields = {
   id: true,
+  kodeUser: true, // Ikut diambil dari database untuk dikirim ke UI
   fullname: true,
   email: true,
   role: true,
@@ -13,8 +15,41 @@ const userFields = {
   token: true,
 } as const
 
-function isDuplicateEmail(error: unknown) {
+function isDuplicateError(error: unknown) {
   return typeof error === "object" && error !== null && "code" in error && error.code === "P2002"
+}
+
+// =========================================================================
+// PEMBUATAN AUTO NUMBER DI BACKEND (API)
+// Mencari kodeUser terakhir di database, mengambil angkanya, lalu + 1
+// =========================================================================
+async function generateKodeUser(tx: Prisma.TransactionClient, role: string) {
+  let prefix = "STF" // Default langsung STF karena role default-nya "staff"
+
+  // Jika user memilih role "admin", ubah prefix menjadi "ADM"
+  if (role === "admin") {
+    prefix = "ADM"
+  }
+
+  const lastUser = await tx.user.findFirst({
+    where: {
+      kodeUser: { startsWith: prefix },
+    },
+    orderBy: {
+      kodeUser: "desc",
+    },
+    select: { kodeUser: true },
+  })
+
+  if (!lastUser || !lastUser.kodeUser) {
+    return `${prefix}0000001`
+  }
+
+  const numericPart = lastUser.kodeUser.slice(prefix.length)
+  const lastNumber = Number.parseInt(numericPart, 10)
+  const nextNumber = Number.isNaN(lastNumber) ? 1 : lastNumber + 1
+
+  return `${prefix}${String(nextNumber).padStart(7, "0")}`
 }
 
 export async function GET(request: Request) {
@@ -42,7 +77,6 @@ export async function GET(request: Request) {
       select: userFields,
     })
     return NextResponse.json({
-
       users: users.map(({ token, ...user }) => ({ ...user, hasToken: Boolean(token) })),
       pagination: { page, pageSize, totalUsers, totalPages },
     })
@@ -85,9 +119,12 @@ export async function POST(request: Request) {
   try {
     const passwordHash = await hashUserPassword(password)
     const user = await prisma.$transaction(async (transaction) => {
-      const created = await transaction.user.create({
-        data: { fullname, email, password: passwordHash, role },
-      })
+  // Kirim transaction DAN role ke dalam fungsi
+  const kodeUser = await generateKodeUser(transaction, role)
+
+  const created = await transaction.user.create({
+    data: { kodeUser, fullname, email, password: passwordHash, role },
+  })
       const token = createUserJwt(created)
       return transaction.user.update({
         where: { id: created.id },
@@ -99,8 +136,8 @@ export async function POST(request: Request) {
     const { token, ...safeUser } = user
     return NextResponse.json({ user: { ...safeUser, hasToken: Boolean(token) } }, { status: 201 })
   } catch (error) {
-    if (isDuplicateEmail(error)) {
-      return NextResponse.json({ error: "Email sudah digunakan." }, { status: 409 })
+    if (isDuplicateError(error)) {
+      return NextResponse.json({ error: "Email atau kode user sudah digunakan." }, { status: 409 })
     }
     console.error("Failed to create user:", error)
     return NextResponse.json({ error: "Gagal membuat user. Periksa koneksi database." }, { status: 500 })

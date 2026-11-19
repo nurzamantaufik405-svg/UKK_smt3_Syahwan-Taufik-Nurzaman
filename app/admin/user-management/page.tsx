@@ -25,6 +25,7 @@ import {
 
 type ManagedUser = {
     id: number
+    kodeUser: string | null // Menerima field kodeUser dari API
     fullname: string
     email: string
     role: string
@@ -69,7 +70,7 @@ export default function UserManagementPage() {
     }
 
     async function deleteUser(user: ManagedUser) {
-        if (!window.confirm(`Hapus user ${user.fullname}?`)) return
+        if (!window.confirm(`Hapus user ${user.fullname} (${user.kodeUser ?? user.id})?`)) return
         setError("")
         try {
             const response = await fetch(`/api/users/${user.id}`, { method: "DELETE" })
@@ -106,7 +107,7 @@ export default function UserManagementPage() {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>ID</TableHead>
+                            <TableHead>id</TableHead>
                             <TableHead>Nama lengkap</TableHead>
                             <TableHead>Email</TableHead>
                             <TableHead>Role</TableHead>
@@ -122,7 +123,8 @@ export default function UserManagementPage() {
                             <TableRow><TableCell colSpan={7} className="text-center">Belum ada user.</TableCell></TableRow>
                         ) : users.map((user) => (
                             <TableRow key={user.id}>
-                                <TableCell>{user.id}</TableCell>
+                                {/* Menampilkan kodeUser langsung dari database */}
+                                <TableCell className="font-mono">{user.kodeUser ?? "-"}</TableCell>
                                 <TableCell className="font-medium">{user.fullname}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell className="capitalize">{user.role}</TableCell>
